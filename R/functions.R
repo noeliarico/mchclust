@@ -87,18 +87,6 @@ merge_clusters <- function(distance_table, merge1, merge2) {
   dt[,1:2] <- new
   return(dt)
 }
-# merge_clusters <- function(dm, merge1, merge2) {
-#   # Update column names
-#   objs_col <- colnames(dm)
-#   objs_col[as.numeric(objs_col) == merge2] <- merge1
-#   colnames(dm) <- objs_col
-#   # Update row names
-#   objs_rows <- rownames(dm)
-#   objs_rows[as.numeric(objs_rows) == merge2] <- merge1
-#   rownames(dm) <- objs_rows
-#
-#   return(dm)
-# }
 
 
 #' @export
@@ -108,19 +96,6 @@ update_plot_log <- function(plot_log, merge1, merge2, level) {
   plot_log[level-1, ] <- prev
   return(plot_log)
 }
-
-# update_plot_log <- function(plot_log, merge1, merge2) {
-#   plot_log_new <- plot_log
-#   plot_log_new <- plot_log_new %>%
-#     dplyr::mutate(level = level-1,
-#            cluster = ifelse(cluster == merge2, merge1, cluster))
-#   plot_log <- plot_log %>%
-#     dplyr::bind_rows(plot_log_new)
-#   return(plot_log)
-# }
-
-
-
 
 #' Title
 #'
@@ -178,9 +153,3 @@ update_borda_log <- function(borda_log, borda_ranking, l) {
                                     level = l))
   return(borda_log)
 }
-
-
-
-x <- tibble::tibble(x = sample(1:20, 10),
-                    y = sample(1:20, 10),
-                    z = sample(1:20, 10))

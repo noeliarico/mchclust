@@ -2,16 +2,18 @@
 % Please edit documentation in R/functions_viz.R
 \name{plot_hclust_comparison}
 \alias{plot_hclust_comparison}
-\title{Title}
+\title{Comparison}
 \usage{
 plot_hclust_comparison(data, k)
 }
 \arguments{
-\item{objects}{}
+\item{data}{Dataset available in the package with V1, V2, class}
+
+\item{k}{Number of real clusters}
 }
 \value{
 
 }
 \description{
-Title
+Comparison
 }

@@ -80,4 +80,12 @@ test_that("test single and complete", {
   plot_hclust_comparison(data08,3)
   plot_hclust_comparison(data09,2)
   plot_hclust_comparison(data10,4)
+
+
+
+
+  x <- tibble::tibble(x = sample(1:20, 10),
+                      y = sample(1:20, 10),
+                      z = sample(1:20, 10))
+
 })

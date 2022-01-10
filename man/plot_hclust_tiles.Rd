@@ -4,7 +4,7 @@
 \alias{plot_hclust_tiles}
 \title{Plot clustering tiles}
 \usage{
-plot_hclust_tiles(hc)
+plot_hclust_tiles(hc, log = F)
 }
 \description{
 For objects created with the `hclust` function

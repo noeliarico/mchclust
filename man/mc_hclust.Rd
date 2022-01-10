@@ -4,7 +4,7 @@
 \alias{mc_hclust}
 \title{Multicriteria hirarchical clustering}
 \usage{
-mc_hclust(data, linkage_methods, verbose = F)
+mc_hclust(data, linkage_methods, aggregation_method = "borda", verbose = F)
 }
 \arguments{
 \item{verbose}{}

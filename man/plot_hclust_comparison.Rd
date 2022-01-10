@@ -4,7 +4,7 @@
 \alias{plot_hclust_comparison}
 \title{Comparison}
 \usage{
-plot_hclust_comparison(data, k)
+plot_hclust_comparison(data, k, mode = "sc")
 }
 \arguments{
 \item{data}{Dataset available in the package with V1, V2, class}

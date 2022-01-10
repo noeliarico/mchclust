@@ -154,9 +154,11 @@ mc_hclust <- function(data,
   return(list(plot_log, ties))
 }
 
-# cutree <- function(mchc, k) {
-#   return(mchc, k)
-# }
 
-
+#' @export
+get_clusters <- function(mchc, k) {
+  clusters <- factor(mchc[[1]][k,])
+  levels(clusters) <- 1:length(levels(clusters))
+  return(clusters)
+}
 

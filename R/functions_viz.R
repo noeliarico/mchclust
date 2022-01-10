@@ -10,6 +10,7 @@
 #'
 #' @examples
 plot_mchclust_tiles <- function(mchc, filter = 0) {
+  mchc <- mchc[[1]]
   colnames(mchc) <- 1:ncol(mchc)
 
   if (filter != 0) {
@@ -131,4 +132,20 @@ plot_hclust_comparison <- function(data, k, mode = "sc") {
     po + ps + pc + pa + patchwork::plot_layout(guides = "collect")
   }
 
+}
+
+#' @export
+plot_mchclust <- function(mchc, data, k) {
+  ggplot(data, aes(V1, V2)) +
+    geom_point(aes(color = get_clusters(mchc, k))) +
+    theme(legend.position = "none")
+}
+
+#' @export
+plot_mchclust_comparison <- function(mchc, data, k, mode = "sca") {
+  plot_hclust <- plot_hclust_comparison(data, k, mode)
+  ggplot(data, aes(V1, V2)) +
+    geom_point(aes(color = get_clusters(mchc, k))) +
+    theme(legend.position = "none") +
+    plot_hclust
 }

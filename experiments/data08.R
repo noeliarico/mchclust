@@ -1,10 +1,8 @@
+# Number of clusters
+nc <- length(unique(data08))
+plot_hclust_comparison(data08, nc, mode = "sca")
 
-
-library(caret)
-
-plot_hclust_comparison(data08,3, mode = "sca")
-
-# Subset
+# Create a subset
 set.seed(3)
 data08b <- caret::createDataPartition(
   data08$class,
@@ -12,31 +10,63 @@ data08b <- caret::createDataPartition(
   list = F
 )
 data08b <- data08[data08b,]
-data08b_training <- data08b[,1:2]
+data08_training <- data08b[,1:2]
 
-# Check new
-pcsca <- plot_hclust_comparison(data08b, 3, mode = "sca")
+# Check the new visualization
+pcsca <- plot_hclust_comparison(data08b, nc, mode = "sca")
+pcsca
 
-data08_s <- hclust(dist(data08b_training), method = "single")
-data08_c <- hclust(dist(data08b_training), method = "complete")
-data08_a <- hclust(dist(data08b_training), method = "average")
+data08_s <- hclust(dist(data08_training), method = "single")
+data08_c <- hclust(dist(data08_training), method = "complete")
+data08_a <- hclust(dist(data08_training), method = "average")
 
-data08_sc_borda <- mc_hclust(data08b_training,
-                       linkage_methods = c("single", "complete"),
-                       verbose = F)
+######## PLURALITY #############################################################
 
-clusters <- as.factor(data08_sc_borda[[1]][3,] )
-ggplot(data08b, aes(V1, V2)) +
-  geom_point(aes(color = clusters)) +
-  theme(legend.position = "none") +
-  pcsca
+data08_sc_plurality <- mc_hclust(data08_training,
+                                 linkage_methods = c("single", "complete"),
+                                 aggregation_method = "plurality",
+                                 verbose = F)
 
-data08_sca_borda <- mc_hclust(data08b_training,
-                        linkage_methods = c("single", "complete", "average"),
-                        verbose = F)
+data08_sca_plurality <- mc_hclust(data08_training,
+                                  linkage_methods = c("single", "complete", "average"),
+                                  aggregation_method = "plurality",
+                                  verbose = F)
 
-clusters <- as.factor(data08_sca_borda[[1]][3,] )
-ggplot(data08b, aes(V1, V2)) +
-  geom_point(aes(color = clusters)) +
-  theme(legend.position = "none") +
-  pcsca
+plot_mchclust_tiles(data08_sc_plurality, 10) + ggtitle("SC")+ plot_mchclust_tiles(data08_sca_plurality, 10) + ggtitle("SCA")
+
+######## TAPPROVAL #############################################################
+
+data08_sc_tapproval <- mc_hclust(data08_training,
+                                 linkage_methods = c("single", "complete"),
+                                 aggregation_method = nc,
+                                 verbose = F)
+
+data08_sca_tapproval <- mc_hclust(data08_training,
+                                  linkage_methods = c("single", "complete", "average"),
+                                  aggregation_method = nc,
+                                  verbose = F)
+
+plot_mchclust_tiles(data08_sc_tapproval, 10) + ggtitle("SC")+ plot_mchclust_tiles(data08_sca_tapproval, 10) + ggtitle("SCA")
+
+######## BORDA #################################################################
+
+data08_sc_borda <- mc_hclust(data08_training,
+                             linkage_methods = c("single", "complete"),
+                             aggregation_method = "borda",
+                             verbose = F)
+
+data08_sca_borda <- mc_hclust(data08_training,
+                              linkage_methods = c("single", "complete", "average"),
+                              aggregation_method = "borda",
+                              verbose = F)
+
+################################################################################
+
+# Save results
+
+evaluate_results
+
+save(data08_sc_plurality, data08_sca_plurality,
+     data08_sc_tapproval, data08_sca_tapproval,
+     data08_sc_borda, data08_sca_borda,
+     file = "experiments/results/results_data08.RData")

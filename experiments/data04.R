@@ -1,8 +1,8 @@
-library(caret)
+# Number of clusters
+nc <- length(unique(data04))
+plot_hclust_comparison(data04, nc, mode = "sca")
 
-plot_hclust_comparison(data04,4, mode = "sca")
-
-# Subset
+# Create a subset
 set.seed(3)
 data04b <- caret::createDataPartition(
   data04$class,
@@ -10,33 +10,63 @@ data04b <- caret::createDataPartition(
   list = F
 )
 data04b <- data04[data04b,]
-data04b_training <- data04b[,1:2]
-# Check new
-plot_hclust_comparison(data04b, 4, mode = "sca")
+data04_training <- data04b[,1:2]
 
-data04_s <- hclust(dist(data04b_training), method = "single")
-data04_c <- hclust(dist(data04b_training), method = "complete")
-data04_a <- hclust(dist(data04b_training), method = "average")
+# Check the new visualization
+pcsca <- plot_hclust_comparison(data04b, nc, mode = "sca")
+pcsca
 
-data04_sc <- mc_hclust(data04b_training,
-                       linkage_methods = c("single", "complete"),
-                       verbose = F)
+data04_s <- hclust(dist(data04_training), method = "single")
+data04_c <- hclust(dist(data04_training), method = "complete")
+data04_a <- hclust(dist(data04_training), method = "average")
 
-data04_sca <- mc_hclust(data04b_training,
-                        linkage_methods = c("single", "complete", "average"),
-                        verbose = F)
+######## PLURALITY #############################################################
 
-clusters <- as.factor(data04_sca[[1]][4,] )
-ggplot(data04b, aes(V1, V2)) +
-  geom_point(aes(color = clusters))
+data04_sc_plurality <- mc_hclust(data04_training,
+                                 linkage_methods = c("single", "complete"),
+                                 aggregation_method = "plurality",
+                                 verbose = F)
 
-clusters <- as.factor(data04_sc[[1]][4,] )
-ggplot(data04b, aes(V1, V2)) +
-  geom_point(aes(color = clusters))
+data04_sca_plurality <- mc_hclust(data04_training,
+                                  linkage_methods = c("single", "complete", "average"),
+                                  aggregation_method = "plurality",
+                                  verbose = F)
 
-Sys.setenv(SPOTIFY_CLIENT_ID = 'ccb5d129b25e4fd0b0c4538a33be5a80')
-Sys.setenv(SPOTIFY_CLIENT_SECRET = '7cea48d756804fb8b1b2a6b4622694e4')
+plot_mchclust_tiles(data04_sc_plurality, 10) + ggtitle("SC")+ plot_mchclust_tiles(data04_sca_plurality, 10) + ggtitle("SCA")
 
-access_token <- get_spotify_access_token()
+######## TAPPROVAL #############################################################
 
-# plot_hclust_comparison(data06,2, mode = "sca")
+data04_sc_tapproval <- mc_hclust(data04_training,
+                                 linkage_methods = c("single", "complete"),
+                                 aggregation_method = nc,
+                                 verbose = F)
+
+data04_sca_tapproval <- mc_hclust(data04_training,
+                                  linkage_methods = c("single", "complete", "average"),
+                                  aggregation_method = nc,
+                                  verbose = F)
+
+plot_mchclust_tiles(data04_sc_tapproval, 10) + ggtitle("SC")+ plot_mchclust_tiles(data04_sca_tapproval, 10) + ggtitle("SCA")
+
+######## BORDA #################################################################
+
+data04_sc_borda <- mc_hclust(data04_training,
+                             linkage_methods = c("single", "complete"),
+                             aggregation_method = "borda",
+                             verbose = F)
+
+data04_sca_borda <- mc_hclust(data04_training,
+                              linkage_methods = c("single", "complete", "average"),
+                              aggregation_method = "borda",
+                              verbose = F)
+
+################################################################################
+
+# Save results
+
+evaluate_results
+
+save(data04_sc_plurality, data04_sca_plurality,
+     data04_sc_tapproval, data04_sca_tapproval,
+     data04_sc_borda, data04_sca_borda,
+     file = "experiments/results/results_data04.RData")

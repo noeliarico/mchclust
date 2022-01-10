@@ -40,4 +40,15 @@ plot_c <- plot_mchclust_tiles(clustering_c[[1]]) + ggtitle("Complete")
 plot_s + plot_c + plot_sc + plot_layout(guides = "collect")
 hc
 
+# Using plurality
 
+
+clustering_sca <- mc_hclust(data,
+                           linkage_methods = c("single", "complete", "average"),
+                           aggregation_method = "plurality",
+                           verbose = T)
+
+clustering_sca <- mc_hclust(data,
+                            linkage_methods = c("single", "complete", "average"),
+                            aggregation_method = "2",
+                            verbose = T)

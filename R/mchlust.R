@@ -10,7 +10,7 @@
 #' @examples
 mc_hclust <- function(data,
                       linkage_methods,
-                      aggregation_method = NULL,
+                      aggregation_method = "borda",
                       verbose = F) {
 
   # Init empty table for logging: for n objects, matrix of n x n where each row

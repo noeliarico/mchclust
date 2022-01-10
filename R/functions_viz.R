@@ -37,7 +37,7 @@ plot_mchclust_tiles <- function(mchc, filter = 0) {
 #' For objects created with the `hclust` function
 #'
 #' @export
-plot_hclust_tiles <- function(hc) {
+plot_hclust_tiles <- function(hc, log = F) {
 
   n <- nrow(hc$merge)+1
   merge <- vector(mode="numeric", n-1)
@@ -66,7 +66,27 @@ plot_hclust_tiles <- function(hc) {
       plot_log[l, update] <- use[1]
     }
   }
-  return(plot_log)
+  if (log) {
+    return(plot_log)
+  }
+  else {
+    colnames(plot_log) <- 1:ncol(plot_log)
+    plot_log <- plot_log %>%
+      tibble::as_tibble() %>%
+      dplyr::mutate(level = factor(1:nrow(plot_log))) %>%
+      tidyr::pivot_longer(-level, names_to = "object") %>%
+      dplyr::mutate(object = as.factor(as.numeric(object)),
+                    cluster = as.factor(value),
+                    value = NULL)
+    ggplot(plot_log,
+           aes(object, level, fill = cluster)) +
+      geom_tile(color = "black") +
+      # xlim(levels(mchc$object)) +
+      ylim(rev(levels(plot_log$level))) +
+      guides(fill = guide_legend(title="Cluster")) +
+      xlab("Object") + ylab("Level") +
+      theme_minimal() + theme(legend.position = "none")
+  }
 }
 
 #' Comparison
@@ -78,20 +98,37 @@ plot_hclust_tiles <- function(hc) {
 #' @export
 #'
 #' @examples
-plot_hclust_comparison <- function(data, k) {
+plot_hclust_comparison <- function(data, k, mode = "sc") {
   d <- dist(data[,1:2])
   hcs <- hclust(d, method = "single")
   clusterss <- cutree(hcs, k)
   hcc <- hclust(d, method = "complete")
   clustersc <- cutree(hcc, k)
+  hca <- hclust(d, method = "average")
+  clustersa <- cutree(hca, k)
+  ps <- ggplot(data, aes(V1, V2)) +
+    geom_point(aes(color = factor(clusterss))) +
+    ggtitle("Single") +
+    theme(legend.position = "none")
+  pc <- ggplot(data, aes(V1, V2)) +
+    geom_point(aes(color = factor(clustersc))) +
+    ggtitle("Complete") +
+    theme(legend.position = "none")
+  pa <- ggplot(data, aes(V1, V2)) +
+    geom_point(aes(color = factor(clustersa))) +
+    ggtitle("Average") +
+    theme(legend.position = "none")
+
   po <- ggplot(data, aes(V1, V2, color = class)) +
     geom_point() +
-    ggtitle("Real")
-  pos <- ggplot(data, aes(V1, V2)) +
-    geom_point(aes(color = factor(clusterss))) +
-    ggtitle("Single")
-  poc <- ggplot(data, aes(V1, V2)) +
-    geom_point(aes(color = factor(clustersc))) +
-    ggtitle("Complete")
-  po + pos + poc + patchwork::plot_layout(guides = "collect")
+    ggtitle("Real") +
+    theme(legend.position = "none")
+
+  if(mode == "sc") {
+    po + ps + pc + patchwork::plot_layout(guides = "collect")
+  }
+  else if(mode == "sca") {
+    po + ps + pc + pa + patchwork::plot_layout(guides = "collect")
+  }
+
 }

@@ -10,7 +10,7 @@
 #' @examples
 mc_hclust <- function(data,
                       linkage_methods,
-                      #  aggregatino_methods = NULL,
+                      aggregation_method = NULL,
                       verbose = F) {
 
   # Init empty table for logging: for n objects, matrix of n x n where each row
@@ -90,15 +90,36 @@ mc_hclust <- function(data,
       print(por)
     }
 
-    # Apply borda count
-    borda_ranking <- consensus::borda(por)
-    if(verbose) {
-      cat("\nBorda ranking:\n")
-      print(borda_ranking)
+    # Apply aggregation method
+
+    if(aggregation_method == "plurality") {
+      winning_ranking <- consensus::plurality(por)
+      if(verbose) {
+        cat("\nPlurality ranking:\n")
+        print(winning_ranking)
+      }
+    }
+    else if(aggregation_method == "borda") {
+      winning_ranking <- consensus::borda(por)
+      if(verbose) {
+        cat("\nBorda ranking:\n")
+        print(winning_ranking)
+      }
+    }
+    else if(!is.na(as.numeric(aggregation_method))) {
+      t <- as.numeric(aggregation_method)
+      winning_ranking <- consensus::tapproval(por, t)
+      if(verbose) {
+        cat("\nt-approval ranking:\n")
+        print(winning_ranking)
+      }
+    } else {
+      stop("Unkown aggregation method")
     }
 
+
     # Get the name of the winner in format cNum_Num
-    winner <- (names(borda_ranking)[which(borda_ranking == 1)])
+    winner <- (names(winning_ranking)[which(winning_ranking == 1)])
     if (length(winner) > 1) {
       ties[l] <- T
     }

@@ -72,14 +72,14 @@ test_that("test single and complete", {
                            #linkage_methods = c("complete"),
                            verbose = F)
 
-  plot_hclust_comparison(data03,4)
-  plot_hclust_comparison(data04,3)
-  plot_hclust_comparison(data05,15)
-  plot_hclust_comparison(data06,2)
-  plot_hclust_comparison(data07,3)
-  plot_hclust_comparison(data08,3)
-  plot_hclust_comparison(data09,2)
-  plot_hclust_comparison(data10,4)
+plot_hclust_comparison(data03,4)
+plot_hclust_comparison(data04,3)
+plot_hclust_comparison(data05,15)
+plot_hclust_comparison(data06,2)
+plot_hclust_comparison(data07,3)
+plot_hclust_comparison(data08,3)
+plot_hclust_comparison(data09,2)
+plot_hclust_comparison(data10,4)
 
 
 

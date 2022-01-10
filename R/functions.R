@@ -120,6 +120,10 @@ get_ranking <- function(distance_table,
     d <- d %>%
       dplyr::summarise(distance = max(value), .groups = 'drop')
   }
+  else if(method == "average") {
+    d <- d %>%
+      dplyr::summarise(distance = mean(value), .groups = 'drop')
+  }
   else {
     stop("Unknown method")
   }

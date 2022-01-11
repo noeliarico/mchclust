@@ -1,61 +1,61 @@
 # Number of clusters
-nc <- length(unique(data08))
-plot_hclust_comparison(data08, nc, mode = "sca")
+nc <- length(unique(data05))
+plot_hclust_comparison(data05, nc, mode = "sca")
 
 # Create a subset
-set.seed(14) # changes a lot depending on the seed
-data08b <- caret::createDataPartition(
-  data08$class,
-  p = .16,
+set.seed(3)
+data05b <- caret::createDataPartition(
+  data05$class,
+  p = .4,
   list = F
 )
-data08b <- data08[data08b,]
-data08_training <- data08b[,1:2]
+data05b <- data05[data05b,]
+data05_training <- data05b[,1:2]
 
 # Check the new visualization
-pcsca <- plot_hclust_comparison(data08b, nc, mode = "sca")
+pcsca <- plot_hclust_comparison(data05b, nc, mode = "sca")
 pcsca
 
-data08_s <- hclust(dist(data08_training), method = "single")
-data08_c <- hclust(dist(data08_training), method = "complete")
-data08_a <- hclust(dist(data08_training), method = "average")
+data05_s <- hclust(dist(data05_training), method = "single")
+data05_c <- hclust(dist(data05_training), method = "complete")
+data05_a <- hclust(dist(data05_training), method = "average")
 
 ######## PLURALITY #############################################################
 
-data08_sc_plurality <- mc_hclust(data08_training,
+data05_sc_plurality <- mc_hclust(data05_training,
                                  linkage_methods = c("single", "complete"),
                                  aggregation_method = "plurality",
                                  verbose = F)
 
-data08_sca_plurality <- mc_hclust(data08_training,
+data05_sca_plurality <- mc_hclust(data05_training,
                                   linkage_methods = c("single", "complete", "average"),
                                   aggregation_method = "plurality",
                                   verbose = F)
 
-plot_mchclust_tiles(data08_sc_plurality, 10) + ggtitle("SC")+ plot_mchclust_tiles(data08_sca_plurality, 10) + ggtitle("SCA")
+plot_mchclust_tiles(data05_sc_plurality, 10) + ggtitle("SC")+ plot_mchclust_tiles(data05_sca_plurality, 10) + ggtitle("SCA")
 
 ######## TAPPROVAL #############################################################
 
-data08_sc_tapproval <- mc_hclust(data08_training,
+data05_sc_tapproval <- mc_hclust(data05_training,
                                  linkage_methods = c("single", "complete"),
                                  aggregation_method = nc,
                                  verbose = F)
 
-data08_sca_tapproval <- mc_hclust(data08_training,
+data05_sca_tapproval <- mc_hclust(data05_training,
                                   linkage_methods = c("single", "complete", "average"),
                                   aggregation_method = nc,
                                   verbose = F)
 
-plot_mchclust_tiles(data08_sc_tapproval, 10) + ggtitle("SC")+ plot_mchclust_tiles(data08_sca_tapproval, 10) + ggtitle("SCA")
+plot_mchclust_tiles(data05_sc_tapproval, 10) + ggtitle("SC")+ plot_mchclust_tiles(data05_sca_tapproval, 10) + ggtitle("SCA")
 
 ######## BORDA #################################################################
 
-data08_sc_borda <- mc_hclust(data08_training,
+data05_sc_borda <- mc_hclust(data05_training,
                              linkage_methods = c("single", "complete"),
                              aggregation_method = "borda",
                              verbose = F)
 
-data08_sca_borda <- mc_hclust(data08_training,
+data05_sca_borda <- mc_hclust(data05_training,
                               linkage_methods = c("single", "complete", "average"),
                               aggregation_method = "borda",
                               verbose = F)
@@ -64,8 +64,7 @@ data08_sca_borda <- mc_hclust(data08_training,
 
 # Save results
 
-save(data08_sc_plurality, data08_sca_plurality,
-     data08_sc_tapproval, data08_sca_tapproval,
-     data08_sc_borda, data08_sca_borda,
-     file = "experiments/results/results_data08.RData")
-
+save(data05_sc_plurality, data05_sca_plurality,
+     data05_sc_tapproval, data05_sca_tapproval,
+     data05_sc_borda, data05_sca_borda,
+     file = "experiments/results/results_data05.RData")

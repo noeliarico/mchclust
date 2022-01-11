@@ -1,3 +1,11 @@
+# LOAD ALL RESULTS #############################################################
+numbers <- stringr::str_pad(1:2, 2, pad = "0")
+methods <- c("sc", "sca")
+aggregation <- c("plurality", "tapproval", "borda")
+endings <- apply(expand.grid(numbers, methods, aggregation), 1, paste, collapse = "_")
+variables <- paste0("data", endings)
+results <- mget(variables)
+
 evaluate_results <- function(data, mchc) {
   if(class(mchc) == "hclust") {
     clusters <- cutree(mchc, length(unique(data$class)))
@@ -28,6 +36,8 @@ evaluate_results <- function(data, mchc) {
 
 }
 
+get_results_table(data01b, "data01", res_data01, tidy = T)
+
 res_data01 <- list(
   "single" = data01_s,
   "complete" = data01_c,
@@ -39,6 +49,23 @@ res_data01 <- list(
   "sc_borda" = data01_sc_borda,
   "sca_borda" = data01_sca_borda
 )
+
+res_data02 <- list(
+  "single" = data02_s,
+  "complete" = data02_c,
+  "average" = data02_a,
+  "sc_plurality" = data02_sc_plurality,
+  "sca_plurality" = data02_sca_plurality,
+  "sc_tapproval" = data02_sc_tapproval,
+  "sca_tapproval" = data02_sca_tapproval,
+  "sc_borda" = data02_sc_borda,
+  "sca_borda" = data02_sca_borda
+)
+
+res <- bind_rows(
+  get_results_table(data01b, "data01", res_data01, tidy = T),
+  get_results_table(data02b, "data02", res_data02, tidy = T))
+
 get_results_table <- function(data, name, list_mchc, tidy = FALSE) {
   res <- lapply(list_mchc, function(x) evaluate_results(data, x)) %>%
     map_dfr(~ .x, .id = "method") %>%
@@ -100,11 +127,6 @@ plot_ranking <- function(res, metric_filter) {
 
 
 evaluate_results(data01b, data01_sc_plurality)
-evaluate_results(data01_sca_plurality)
-evaluate_results(data01_sc_tapproval)
-evaluate_results(data01_sca_tapproval)
-evaluate_results(data01_sc_borda)
-evaluate_results(data01_sca_borda)
 
 tema <- theme_bw() +
   theme(text = element_text(family = "Times New Roman", size = 14),
@@ -112,12 +134,36 @@ tema <- theme_bw() +
         axis.title.x = element_text(vjust=-5),
         axis.title.y = element_text(vjust=5))
 
-one_mchclust_vs_many_hclust <- function(res, metric) {
-  ggplot(res, aes(x = method, y = metric)) +
+one_mchclust_vs_many_hclust <- function(res, metric_filter, data_filter,
+                                        aggregation_filter) {
+  res <- res %>%
+    filter(metric == metric_filter,
+           data == data_filter)
+  res <- res %>%
+    mutate(better = value >= (res %>%
+                                filter(method == aggregation_filter) %>%
+                                pull(value)))
+  print(res)
+  ggplot(res, aes(x = method, y = value)) +
     geom_bar(
       stat = "identity", position = position_stack(),
       color = "white", fill = "lightblue"
-    ) +
-    coord_flip()
+    )
+    # coord_flip()
 }
 
+best_metric_in_all_data <- function(res) {
+  res <- res %>%
+    group_by(data, metric) %>%
+    mutate(ranking = rank(value, ties.method = "first")) %>%
+    ungroup() %>%
+    filter(ranking == 1) %>%
+    group_by(metric, method) %>%
+    count() %>%
+    ungroup() %>%
+    mutate(n = factor(n))
+  ggplot(res, aes(method, n)) +
+    geom_bar(stat = "identity") +
+    facet_grid(metric ~ .) +
+    tema
+}

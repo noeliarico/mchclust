@@ -1,5 +1,5 @@
 # Number of clusters
-nc <- length(unique(data02))
+nc <- length(unique(data02$class))
 plot_hclust_comparison(data02, nc, mode = "sca")
 
 # Create a subset

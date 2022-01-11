@@ -1,3 +1,10 @@
+tema <- theme_bw() +
+  theme(text = element_text(family = "Times New Roman", size = 14),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        axis.title.x = element_text(vjust=-5),
+        axis.title.y = element_text(vjust=5))
+
+
 plot_hclust_comparison(data01,3, mode = "sca")
 plot_hclust_comparison(data02,4, mode = "sca")
 #plot_hclust_comparison(data03,4)

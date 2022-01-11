@@ -128,11 +128,6 @@ plot_ranking <- function(res, metric_filter) {
 
 evaluate_results(data01b, data01_sc_plurality)
 
-tema <- theme_bw() +
-  theme(text = element_text(family = "Times New Roman", size = 14),
-        plot.margin = unit(c(1,1,1,1), "cm"),
-        axis.title.x = element_text(vjust=-5),
-        axis.title.y = element_text(vjust=5))
 
 one_mchclust_vs_many_hclust <- function(res, metric_filter, data_filter,
                                         aggregation_filter) {

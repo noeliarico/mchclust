@@ -64,8 +64,6 @@ data01_sca_borda <- mc_hclust(data01_training,
 
 # Save results
 
-evaluate_results
-
 save(data01_sc_plurality, data01_sca_plurality,
      data01_sc_tapproval, data01_sca_tapproval,
      data01_sc_borda, data01_sca_borda,

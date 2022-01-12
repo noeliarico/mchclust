@@ -3,7 +3,7 @@ nc <- length(unique(data11$class))
 plot_hclust_comparison(data11, nc, mode = "sca")
 
 # Create a subset
-set.seed(10) # changes a lot depending on the seed
+set.seed(1) # changes a lot depending on the seed
 data11b <- caret::createDataPartition(
   data11$class,
   p = .05,
@@ -86,5 +86,5 @@ save(data11_single,
      data11_sca_tapproval,
      data11_sc_borda,
      data11_sca_borda,
-     file = "experiments/results/results_data11.RData")
+     file = "experiments/IPMU2022/results/results_data11.RData")
 

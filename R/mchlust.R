@@ -108,6 +108,9 @@ mc_hclust <- function(data,
     }
     else if(!is.na(as.numeric(aggregation_method))) {
       t <- as.numeric(aggregation_method)
+      if(t >= l) {
+        t <- 1
+      }
       winning_ranking <- consensus::tapproval(por, t)
       if(verbose) {
         cat("\nt-approval ranking:\n")

@@ -100,6 +100,14 @@ plot_hclust_tiles <- function(hc, log = F) {
 #'
 #' @examples
 plot_hclust_comparison <- function(data, k, mode = "sc") {
+
+  tema <- theme_minimal() +
+    theme(text = element_text(family = "Times", size = 12),
+          plot.margin = unit(c(.5,.5,.5,.5), "cm"),
+          axis.title.x = element_text(vjust=-5),
+          axis.title.y = element_text(vjust=5),
+          legend.position = "none")
+
   d <- dist(data[,1:2])
   hcs <- hclust(d, method = "single")
   clusterss <- cutree(hcs, k)
@@ -110,20 +118,25 @@ plot_hclust_comparison <- function(data, k, mode = "sc") {
   ps <- ggplot(data, aes(V1, V2)) +
     geom_point(aes(color = factor(clusterss))) +
     ggtitle("Single") +
-    theme(legend.position = "none")
+    tema
   pc <- ggplot(data, aes(V1, V2)) +
     geom_point(aes(color = factor(clustersc))) +
     ggtitle("Complete") +
-    theme(legend.position = "none")
+    tema
   pa <- ggplot(data, aes(V1, V2)) +
     geom_point(aes(color = factor(clustersa))) +
     ggtitle("Average") +
-    theme(legend.position = "none")
+    tema
 
   po <- ggplot(data, aes(V1, V2, color = class)) +
     geom_point() +
     ggtitle("Real") +
-    theme(legend.position = "none")
+    theme_bw() +
+    theme(text = element_text(family = "Times", size = 12),
+          plot.margin = unit(c(1,1,1,1), "cm"),
+          axis.title.x = element_text(vjust=-5),
+          axis.title.y = element_text(vjust=5),
+          legend.position = "none")
 
   if(mode == "sc") {
     po + ps + pc + patchwork::plot_layout(guides = "collect")

@@ -5,7 +5,7 @@ tema <- theme_bw() +
         axis.title.y = element_text(vjust=5))
 
 
-plot_hclust_comparison(data01,3, mode = "sca")
+plot_hclust_comparison(data01b,3, mode = "sca")
 plot_hclust_comparison(data02,4, mode = "sca")
 #plot_hclust_comparison(data03,4)
 plot_hclust_comparison(data04,3, mode = "sca")

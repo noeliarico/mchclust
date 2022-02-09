@@ -1,0 +1,18 @@
+save(
+  data01b,
+  data02b,
+  #data03b,
+  data04b,
+  data05b,
+  data06b,
+  data07b,
+  data08b,
+  data09b,
+  data10b,
+  data11b,
+  data12b,
+  data13b,
+  data14b,
+  data15b,
+  data16b,
+  file = "data/datab.rda")

@@ -30,7 +30,16 @@ plot_mchclust_tiles <- function(mchc, filter = 0) {
     ylim(rev(levels(mchc$level))) +
     guides(fill = guide_legend(title="Cluster")) +
     xlab("Object") + ylab("Level") +
-    theme_minimal() + theme(legend.position = "none")
+    scale_fill_brewer(palette = "Dark2") +
+    scale_x_discrete(labels = parse(text = paste0("x[", 1:nrow(data), "]"))) +
+
+    theme_minimal() +
+    theme(legend.position = "none",
+          axis.text.x = element_text(family = "Times New Roman",
+                                     color = "black", size = 9),
+          axis.text.y = element_text(size = 7),
+          title = element_text(family = "Times New Roman", size = 7, face = "bold"),
+          axis.title = element_text(family = "Times New Roman", size = 7, face = "plain"),)
 }
 
 #' Plot clustering tiles

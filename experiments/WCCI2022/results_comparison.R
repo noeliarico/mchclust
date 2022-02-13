@@ -1,6 +1,7 @@
 # LOAD ALL RESULTS #############################################################
 numbers <- stringr::str_pad(1:2, 2, pad = "0")
 
+# Gets for each data set the results of all the methods executed
 get_list_results <- function(id) {
   methods <- c("sc", "sca")
   aggregation <- c("plurality", "tapproval", "borda")
@@ -39,21 +40,34 @@ evaluate_results <- function(data, mchc) {
   } else {
     clusters <- get_clusters(mchc, length(unique(data$class)))
   }
-  cm <- table(clusters, data$class)
 
-  cat(paste0("Correct: ", sum(diag(cm)), "/", sum(cm), " - ",  round(sum(diag(cm))*100/sum(cm), 2), "%"))
+  clusters <- as.numeric(as.character(clusters))
+  classes <- as.numeric(as.character(data$class))
+  cat("Clusters:\n")
+  print(clusters)
+  cat("Classes:\n")
+  print(classes)
 
-  res <- fpc::cluster.stats(dist(data[,1:2]),
-                            as.numeric(data$class),
-                            as.numeric(clusters))
+
+  # cm <- table(clusters, data$class)
+  #
+  # cat(paste0("Correct: ", sum(diag(cm)), "/", sum(cm), " - ",  round(sum(diag(cm))*100/sum(cm), 2), "%"))
+  #
+  # res <- fpc::cluster.stats(dist(data[,1:2]),
+  #                           as.numeric(data$class),
+  #                           as.numeric(clusters))
+  #
+  # res <- tibble::tibble(
+  #   total = length(data$class),
+  #   correct  = sum(diag(cm)),
+  #   entropy = res$entropy,
+  #   dunn = res$dunn,
+  #   rand = res$corrected.rand,
+  #   vi = res$vi
+  # )
 
   res <- tibble::tibble(
-    total = length(data$class),
-    correct  = sum(diag(cm)),
-    entropy = res$entropy,
-    dunn = res$dunn,
-    rand = res$corrected.rand,
-    vi = res$vi
+    ri = rand.index(classes, clusters),
   )
 
   return(res)
@@ -82,7 +96,7 @@ get_results_table <- function(data, name, list_mchc, tidy = FALSE) {
 # Get them for all data
 res <- bind_rows(
   get_results_table(data01b, "data01", res_data01, tidy = T),
- # get_results_table(data02b, "data02", res_data02, tidy = T),
+  get_results_table(data02b, "data02", res_data02, tidy = T),
   get_results_table(data04b, "data04", res_data04, tidy = T),
   get_results_table(data05b, "data05", res_data05, tidy = T),
   get_results_table(data06b, "data06", res_data06, tidy = T),
@@ -102,12 +116,25 @@ res <- bind_rows(
 
 ############### Results
 
+res_filtered <- res %>% filter(method %in% c(
+                                     "single",
+                                     "complete",
+                                     "average",
+                                     "sca_plurality",
+                                     "sca_tapproval")) %>%
+  mutate(hclust = method %in% c("single", "complete", "average")) %>%
+  mutate(method = factor(method,
+                         labels = c("Single", "Complete", "Average",
+                                    "Plurality", "t-approval"),
+          levels = c("single", "complete", "average",
+                    "sca_plurality", "sca_tapproval")))
+
 plot_ranking <- function(res, metric_filter, data_filter) {
   res <- res %>%
     filter(metric == metric_filter) %>%
-    filter(data == data_filter) %>%
-    mutate(ranking = rank(value, ties.method = "min"),
-           ranking = as.factor(ranking))
+    filter(data == data_filter) # %>%
+    # mutate(ranking = rank(value, ties.method = "min"),
+    #        ranking = as.factor(ranking))
   min_hclust <- res %>%
     filter(metric == metric_filter) %>%
     filter(!str_detect(method, '_')) %>%
@@ -118,25 +145,50 @@ plot_ranking <- function(res, metric_filter, data_filter) {
     filter(!str_detect(method, '_')) %>%
     summarise(max = max(value)) %>%
     pull(max)
-  colfunc <- colorRampPalette(c("#BAECF8", "#03303B"))
-  colors <- colfunc(16)
-  ggplot(res, aes(method, value, fill = ranking)) +
+  # colfunc <- colorRampPalette(c("#BAECF8", "#03303B"))
+  # colors <- colfunc(16)
+  ggplot(res, aes(method, value, fill = hclust)) +
     geom_bar(stat = "identity") +
-    scale_fill_manual(values = colors) +
+    geom_text(aes(label = round(value, 2), color = hclust), y = 0.15,
+              family = "Times New Roman") +
+    scale_fill_manual(values = c("#D1AC00", "#004643")) +
+    scale_color_manual(values = c("black", "white")) +
     geom_hline(yintercept = min_hclust) +
     geom_hline(yintercept = max_hclust) +
-    labs(x = "Linkage method", y = metric_filter,
-         fill = "Ranking of\nbest methods") +
-    tema
+    scale_y_continuous(limits = c(0, 1)) +
+    labs(x = "Method", y = "Rand Index") +
+    coord_flip() +
+    tema +
+    theme(panel.grid.major.x = element_blank(),
+          #axis.title.x = element_text(vjust=0,-1),
+          #axis.text.x = element_text(angle = 30, hjust = 0.2),
+          legend.position = "none",
+          plot.title = element_text(face = "bold"))
 }
 
-plot_ranking(res %>% filter(method %in% c("single",
-                                          "complete",
-                                          "average",
-                                          "sca_plurality",
-                                          "sca_tapproval")),
-             "correct",
-             "data11")
+p1  <- plot_ranking(res_filtered, "ri", "data01") + ggtitle("Data set 01")# WCCI 1
+p2  <- plot_ranking(res_filtered, "ri", "data02") + ggtitle("Data set 02")# WCCI 2
+#plot_ranking(res_filtered, "ri", "data03")
+p3  <- plot_ranking(res_filtered, "ri", "data04") + ggtitle("Data set 03")# WCCI 3
+#plot_ranking(res_filtered, "ri", "data05")
+#plot_ranking(res_filtered, "ri", "data06")
+p4  <- plot_ranking(res_filtered, "ri", "data07") + ggtitle("Data set 04")# WCCI 4
+p5  <- plot_ranking(res_filtered, "ri", "data08") + ggtitle("Data set 05")# WCCI 5
+p6  <- plot_ranking(res_filtered, "ri", "data09") + ggtitle("Data set 06")# WCCI 6
+p7  <- plot_ranking(res_filtered, "ri", "data10") + ggtitle("Data set 07")# WCCI 7
+p8  <- plot_ranking(res_filtered, "ri", "data11") + ggtitle("Data set 08")# WCCI 8
+p9  <- plot_ranking(res_filtered, "ri", "data12") + ggtitle("Data set 09")# WCCI 9
+p10 <- plot_ranking(res_filtered, "ri", "data13") + ggtitle("Data set 10")# WCCI 10
+p11 <- plot_ranking(res_filtered, "ri", "data14") + ggtitle("Data set 11")# WCCI 11
+p12 <- plot_ranking(res_filtered, "ri", "data15") + ggtitle("Data set 12")# WCCI 12
+# plot_ranking(res_filtered, "ri", "data16")
+
+library(patchwork)
+(p1 | p2 | p3) / (p4 | p5 | p6) / (p7 | p8 | p9) / (p10 | p11 | p12)
+
+
+(p1 | p2) / (p3 | p4) / (p5 | p6) / (p7 | p8) / (p9 | p10) / (p11 | p12)
+############
 
 one_mchclust_vs_many_hclust <- function(res, metric_filter, data_filter,
                                         aggregation_filter) {
@@ -171,10 +223,3 @@ best_metric_in_all_data <- function(res) {
     facet_grid(metric ~ .) +
     tema
 }
-
-r <- rank(c(.4, .6, .5, .2, .1, .5, .2), ties.method = "min")
-missing <- rev(which(!(1:length(r) %in% r)))
-for(i in missing) {
-  r <- ifelse(r > i, r-1, r)
-}
-

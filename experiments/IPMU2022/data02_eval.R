@@ -1,6 +1,0 @@
-evaluate_results(data02_sc_plurality, data02b$class)
-evaluate_results(data02_sca_plurality, data02b$class)
-evaluate_results(data02_sc_tapproval, data02b$class)
-evaluate_results(data02_sca_tapproval, data02b$class)
-evaluate_results(data02_sc_borda, data02b$class)
-evaluate_results(data02_sca_borda, data02b$class)

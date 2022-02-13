@@ -86,5 +86,5 @@ save(data02_single,
      data02_sca_tapproval,
      data02_sc_borda,
      data02_sca_borda,
-     file = "experiments/IPMU2022/results/results_data02.RData")
+     file = "experiments/WCCI2022/results/results_data02.RData")
 

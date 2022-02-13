@@ -13,14 +13,28 @@ plot_basic <- function(data, name = "") {
     geom_point() +
     tema +
     theme(legend.position = "none") +
+    scale_color_manual(values = c(brewer.pal(n = 8, name = "Dark2"), "black")) +
     ggtitle(paste0(name, " - ", "(Objects: ", nrow(data), ", Clusters: ", length(unique(data$class)), ")"))
 }
 
+# (plot_basic(data01b, "01") | plot_basic(data02b, "02") | plot_basic(data04b, "03")) /
+#   (plot_basic(data05b, "04") | plot_basic(data06b, "05") | plot_basic(data07b, "06")) /
+#   (plot_basic(data08b, "07") | plot_basic(data09b, "08") | plot_basic(data10b, "09")) /
+#   (plot_basic(data11b, "10") | plot_basic(data12b, "11") | plot_basic(data13b, "12")) /
+#   (plot_basic(data15b, "13") | plot_basic(data14b, "14") | plot_basic(data16b, "15"))
+
 (plot_basic(data01b, "01") | plot_basic(data02b, "02") | plot_basic(data04b, "03")) /
-  (plot_basic(data05b, "04") | plot_basic(data06b, "05") | plot_basic(data07b, "06")) /
-  (plot_basic(data08b, "07") | plot_basic(data09b, "08") | plot_basic(data10b, "09")) /
-  (plot_basic(data11b, "10") | plot_basic(data12b, "11") | plot_basic(data13b, "12")) /
-  (plot_basic(data15b, "13") | plot_basic(data14b, "14") | plot_basic(data16b, "15"))
+  (plot_basic(data07b, "04") | plot_basic(data08b, "05") | plot_basic(data09b, "06")) /
+  (plot_basic(data10b, "07") | plot_basic(data11b, "08") | plot_basic(data12b, "09")) /
+  (plot_basic(data13b, "10") | plot_basic(data14b, "11") | plot_basic(data15b, "12"))
+
+
+(plot_basic(data01b, "01") | plot_basic(data02b, "02")) /
+  (plot_basic(data04b, "03") | plot_basic(data07b, "04")) /
+  (plot_basic(data08b, "05") | plot_basic(data09b, "06")) /
+  (plot_basic(data10b, "07") | plot_basic(data11b, "08")) /
+  (plot_basic(data12b, "09") | plot_basic(data13b, "10")) /
+  (plot_basic(data14b, "11") | plot_basic(data15b, "12"))
 
 
 # Comparison with different hirarchical clustering methods #####################
